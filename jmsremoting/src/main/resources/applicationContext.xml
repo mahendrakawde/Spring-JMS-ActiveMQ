@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jms="http://www.springframework.org/schema/jms"
+
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/jms
+	http://www.springframework.org/schema/jms/spring-jms-3.0.xsd">
+
+	<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory" p:brokerURL="tcp://localhost:61616"
+		p:prefetchPolicy-ref="prefetchPolicy" />
+
+	<bean id="prefetchPolicy" class="org.apache.activemq.ActiveMQPrefetchPolicy"
+		p:queuePrefetch="1" />
+
+	<bean id="listener" class="com.javatpoint.MyMessageListener"></bean>
+
+	<jms:listener-container concurrency="25-50" connection-factory="connectionFactory">
+		<jms:listener destination="javatpointQueue" ref="listener"
+			method="onMessage"></jms:listener>
+	</jms:listener-container>
+
+	<!-- The JMS destination -->
+
+	  <bean id="destination" class="org.apache.activemq.command.ActiveMQQueue">
+	    <constructor-arg value="javatpointQueue" />
+	  </bean>
+
+
+	<!-- <bean id="msgListenerContainer" 
+			class="org.springframework.jms.listener.DefaultMessageListenerContainer"
+			p:connectionFactory-ref="connectionFactory"
+			p:destination-ref="destination"
+			p:messageListener-ref="listener"
+	    	p:concurrentConsumers="10"
+	    	p:maxConcurrentConsumers="50" 
+		    /> -->
+
+</beans>
